@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publishing Results Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            // Primary Blues
+                            'azul-quinto': '#3957BD',
+                            'azul-quinto-claro': '#ECEFF9',
+                            // Secondary Blues
+                            'azul-profundo': '#021841',
+                            'noite': '#07358F',
+                            'topazio': '#466795',
+                            'capri': '#67C4DB',
+                            'lirio': '#B8D1FF',
+                            // Neutrals
+                            'preto': '#000000',
+                            'concreto': '#6E6E64',
+                            'cinza-quente': '#C5C9BA',
+                            'creme': '#FBF5E7',
+                            'branco-quinto': '#F8F9F5',
+                            // Vibrant Accents
+                            'violeta': '#9A75B4',
+                            'blush': '#EA4E58',
+                            'floresta': '#009850',
+                            'lima': '#D1CF29',
+                            'manteiga': '#F2C037',
+                            // Deep & Earth Tones
+                            'ameixa': '#633758',
+                            'tijolo': '#9E3C11',
+                            'cereja': '#9D264F',
+                            'musgo': '#242825',
+                            'ocre': '#B08D29',
+                            'chocolate': '#4B3800',
+                            'cafe': '#816242',
+                            'petroleo': '#46777A',
+                            // Soft & Pastel Tones
+                            'lavanda': '#D5BFD7',
+                            'areia': '#D5A497',
+                            'primavera': '#A3C7A1',
+                            'amendoim': '#C9A371',
+                            'trigo': '#F2D1A5',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFFFFF;
+            color: #242825;
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes growBar {
+            from {
+                height: 0;
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+
+        .delay-200 {
+            animation-delay: 200ms;
+        }
+
+        .delay-300 {
+            animation-delay: 300ms;
+        }
+
+        .delay-400 {
+            animation-delay: 400ms;
+        }
+
+        .delay-500 {
+            animation-delay: 500ms;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-full overflow-hidden bg-white">
+
+    <div id="root" class="w-full h-full"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons ---
+        const ChevronLeft = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 18 9 12 15 6"></polyline></svg>
+        );
+        const ChevronRight = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="9 18 15 12 9 6"></polyline></svg>
+        );
+        const Target = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        );
+        const Shield = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        );
+        const Zap = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        );
+        const ArrowDown = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+        );
+        const CheckCircle = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        );
+
+        // --- Data ---
+        const monthlyData = [
+            { month: 'Jan', bugs: 17, quarter: 'Q1', status: 'Ramp Up' },
+            { month: 'Feb', bugs: 48, quarter: 'Q1', status: 'Baseline' },
+            { month: 'Mar', bugs: 64, quarter: 'Q1', status: 'Peak' },
+            { month: 'Apr', bugs: 43, quarter: 'Q2', status: 'Baseline' },
+            { month: 'May', bugs: 40, quarter: 'Q2', status: 'Partial' },
+            { month: 'Jun', bugs: 20, quarter: 'Q2', status: 'Partial' },
+            { month: 'Jul', bugs: 20, quarter: 'Q3', status: 'Partial' },
+            { month: 'Aug', bugs: 17, quarter: 'Q3', status: 'Full Rollout' },
+            { month: 'Sep', bugs: 9, quarter: 'Q3', status: 'Best Month' },
+            { month: 'Oct', bugs: 10, quarter: 'Q4', status: 'Stable' },
+            { month: 'Nov', bugs: 12, quarter: 'Q4', status: 'Stable' },
+        ];
+
+        const quarterlyData = [
+            { name: 'Q1', period: 'Jan-Mar', total: 129, label: 'Pre-rollout', avg: 43, reduction: null, color: 'text-brand-blush', bg: 'bg-brand-blush/10', border: 'border-brand-blush/20' },
+            { name: 'Q2', period: 'Apr-Jun', total: 103, label: 'Partial rollout', avg: 34.3, reduction: '20%', color: 'text-brand-tijolo', bg: 'bg-brand-tijolo/10', border: 'border-brand-tijolo/20' },
+            { name: 'Q3', period: 'Jul-Sep', total: 46, label: 'Full rollout', avg: 15.3, reduction: '64%', color: 'text-brand-floresta', bg: 'bg-brand-floresta/10', border: 'border-brand-floresta/20' },
+            { name: 'Q4', period: 'Oct-Nov*', total: 22, label: 'Mature system', avg: 11, reduction: '74%', color: 'text-brand-floresta', bg: 'bg-brand-floresta/10', border: 'border-brand-floresta/20' },
+        ];
+
+        const ownerXPData = [
+            { month: 'Jan', total: 133, publishing: 17, share: 12.8 },
+            { month: 'Feb', total: 159, publishing: 48, share: 30.2 },
+            { month: 'Mar', total: 181, publishing: 64, share: 35.4 },
+            { month: 'Apr', total: 202, publishing: 43, share: 21.3 },
+            { month: 'May', total: 219, publishing: 40, share: 18.3 },
+            { month: 'Jun', total: 133, publishing: 20, share: 15.0 },
+            { month: 'Jul', total: 140, publishing: 20, share: 14.3 },
+            { month: 'Aug', total: 142, publishing: 17, share: 12.0 },
+            { month: 'Sep', total: 117, publishing: 9, share: 7.7 },
+            { month: 'Oct', total: 155, publishing: 10, share: 6.5 },
+            { month: 'Nov', total: 108, publishing: 12, share: 11.1 },
+        ];
+
+        // --- Slides ---
+
+        const Slide1_Intro = () => (
+            <div className="h-full flex flex-col items-center justify-center text-center px-8 relative overflow-hidden">
+                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-brand-azul-quinto/5 rounded-full blur-3xl -z-10"></div>
+                <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-brand-blush/5 rounded-full blur-3xl -z-10"></div>
+
+                <div className="animate-fadeIn space-y-8 max-w-4xl">
+                    <div className="inline-block px-4 py-1.5 rounded-full bg-brand-azul-quinto-claro text-brand-azul-quinto font-semibold text-sm tracking-wide">
+                        RESULTS IN
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-bold text-brand-azul-profundo leading-tight">
+                        New Publishing <br />
+                        <span className="text-brand-azul-quinto">State Machine</span>
+                    </h1>
+                    <p className="text-xl text-brand-concreto max-w-2xl mx-auto">
+                        We're excited to announce that the Publishing State Machine is now fully live for all listing publishing flows!
+                    </p>
+
+                    <div className="mt-12 p-8 bg-white rounded-2xl shadow-sm border border-brand-azul-quinto/10 text-left">
+                        <h3 className="text-lg font-bold text-brand-azul-profundo mb-3 flex items-center">
+                            <Target className="mr-2 text-brand-azul-quinto" /> What is it?
+                        </h3>
+                        <p className="text-brand-concreto leading-relaxed">
+                            The state machine is a <strong>single source of truth</strong> for a listing's status. It defines every required step and enforces the strict rules for moving between them. The full implementation will cover publishing, unpublishing, suspending, and excluding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Slide2_Challenge = () => (
+            <div className="h-full flex flex-col justify-center px-12 md:px-24 relative">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-blush/5 -z-10"></div>
+
+                <div className="animate-fadeIn max-w-5xl w-full mx-auto">
+                    <div className="flex items-center space-x-4 mb-12">
+                        <div className="p-3 bg-brand-blush/10 rounded-xl">
+                            <Shield className="text-brand-blush" size={32} />
+                        </div>
+                        <h2 className="text-4xl font-bold text-brand-azul-profundo">The Challenge It Solves</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                        <div className="space-y-6">
+                            <p className="text-xl text-brand-concreto leading-relaxed">
+                                The complexity of publishing a listing was a top source of bugs and a major point of frustration for our Owners.
+                            </p>
+                            <div className="bg-brand-branco-quinto p-6 rounded-xl border-l-4 border-brand-blush">
+                                <h3 className="font-bold text-brand-azul-profundo mb-2">The "Black Box" Problem</h3>
+                                <p className="text-brand-musgo">
+                                    The process had many invisible rules scattered across multiple systems, making it difficult to diagnose errors and prevent them from happening again.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-10 rounded-3xl shadow-[0_20px_50px_rgba(234,78,88,0.15)] border border-brand-blush/10 text-center">
+                            <div className="text-6xl font-bold text-brand-blush mb-4">29%</div>
+                            <div className="text-brand-concreto font-medium uppercase tracking-widest text-sm">
+                                of total Owner XP bugs
+                            </div>
+                            <p className="mt-4 text-brand-musgo text-sm">
+                                were related to publishing issues before the state machine was implemented.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Slide3_Impact = () => {
+            const maxBugs = 70;
+            return (
+                <div className="h-full flex flex-col px-8 md:px-16 pt-8 pb-4">
+                    <div className="flex justify-between items-end mb-6 animate-fadeIn">
+                        <div className="max-w-2xl">
+                            <h2 className="text-3xl font-bold text-brand-azul-profundo mb-2">The Impact </h2>
+                            <p className="text-brand-concreto">
+                                We started the rollout in mid april and saw a significant drop in bugs right away.
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-3xl font-bold text-brand-floresta">81% Drop</div>
+                            <div className="text-xs text-brand-concreto uppercase tracking-wide">from March Peak</div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 flex items-end justify-between space-x-2 md:space-x-4 pb-8 border-b border-brand-concreto/20 relative animate-fadeIn delay-200">
+                        {/* Grid Lines */}
+                        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none -z-10">
+                            {[1, 0.75, 0.5, 0.25, 0].map((tick, i) => (
+                                <div key={i} className="w-full border-t border-dashed border-brand-concreto/10 h-0 flex items-center">
+                                    <span className="text-[10px] text-brand-concreto/40 -ml-6 pr-2">{Math.round(maxBugs * tick)}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {monthlyData.map((data, index) => {
+                            let barColor = 'bg-brand-blush';
+                            if (data.quarter === 'Q2') barColor = 'bg-brand-tijolo';
+                            if (data.quarter === 'Q3' || data.quarter === 'Q4') barColor = 'bg-brand-floresta';
+
+                            const heightPercentage = (data.bugs / maxBugs) * 100;
+
+                            return (
+                                <div key={index} className="flex flex-col items-center flex-1 h-full justify-end group relative">
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-12 bg-brand-azul-profundo text-white text-xs p-2 rounded shadow-lg whitespace-nowrap z-10">
+                                        {data.bugs} Bugs
+                                    </div>
+                                    <div
+                                        className={`w-full max-w-[50px] rounded-t-md transition-all duration-300 hover:brightness-110 ${barColor}`}
+                                        style={{
+                                            height: `${heightPercentage}%`,
+                                            animation: `growBar 0.8s ease-out backwards ${index * 100}ms`
+                                        }}
+                                    ></div>
+                                    <div className="mt-2 text-xs font-medium text-brand-concreto">{data.month}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        const Slide4_QuarterlyEvolution = () => (
+            <div className="h-full flex flex-col justify-center px-8 md:px-20 bg-brand-azul-quinto-claro/30">
+                <div className="animate-fadeIn max-w-6xl mx-auto w-full">
+                    <h2 className="text-3xl font-bold text-brand-azul-profundo mb-8 text-center">Quarterly Evolution</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        {quarterlyData.map((q, idx) => (
+                            <div key={q.name} className={`bg-white p-5 rounded-2xl shadow-sm border ${q.border} flex flex-col animate-fadeIn`} style={{ animationDelay: `${idx * 100}ms` }}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <div className="text-lg font-bold text-brand-azul-profundo">{q.name}</div>
+                                        <div className="text-xs text-brand-concreto">{q.period}</div>
+                                    </div>
+                                    <div className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${q.bg} ${q.color}`}>
+                                        {q.label}
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 space-y-4">
+                                    <div className="flex justify-between items-end border-b border-gray-100 pb-2">
+                                        <span className="text-xs text-brand-concreto">Total Bugs</span>
+                                        <span className="text-xl font-bold text-brand-musgo">{q.total}</span>
+                                    </div>
+                                    <div className="flex justify-between items-end border-b border-gray-100 pb-2">
+                                        <span className="text-xs text-brand-concreto">Avg/Month</span>
+                                        <span className="text-xl font-bold text-brand-musgo">{q.avg}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center pt-1">
+                                        <span className="text-xs text-brand-concreto">vs Q1</span>
+                                        {q.reduction ? (
+                                            <span className={`text-lg font-bold ${q.color}`}>↓ {q.reduction}</span>
+                                        ) : (
+                                            <span className="text-xs font-medium text-brand-concreto uppercase">Baseline</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-8 flex justify-between items-end">
+                        <div className="text-xs text-brand-concreto italic">*Q4 only has 2 months of data so far</div>
+
+                        <div className="bg-white px-8 py-4 rounded-2xl shadow-lg border border-brand-azul-quinto/10 flex items-center space-x-6 animate-fadeIn delay-500">
+                            <div>
+                                <h3 className="text-sm font-bold text-brand-azul-profundo uppercase tracking-wide">Total Reduction</h3>
+                                <p className="text-brand-concreto text-xs">Q1 Baseline → Q4 Mature</p>
+                            </div>
+                            <div className="text-4xl font-bold text-brand-azul-profundo">
+                                74%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Slide5_How = () => (
+            <div className="h-full flex flex-col justify-center px-12 md:px-24 bg-brand-azul-quinto-claro/30">
+                <div className="animate-fadeIn max-w-5xl w-full mx-auto">
+                    <div className="flex items-center space-x-4 mb-12">
+                        <div className="p-3 bg-brand-azul-quinto/10 rounded-xl">
+                            <Zap className="text-brand-azul-quinto" size={32} />
+                        </div>
+                        <h2 className="text-4xl font-bold text-brand-azul-profundo">How We Did It</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-brand-azul-quinto/10 hover:-translate-y-1 transition-transform duration-300">
+                            <div className="text-brand-azul-quinto font-bold text-xl mb-4">01</div>
+                            <h3 className="font-bold text-brand-azul-profundo mb-3">Unified Architecture</h3>
+                            <p className="text-sm text-brand-concreto leading-relaxed">
+                                Migrated from a scattered legacy architecture to a unified state machine managing all publishing changes.
+                            </p>
+                        </div>
+
+                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-brand-azul-quinto/10 hover:-translate-y-1 transition-transform duration-300 delay-100">
+                            <div className="text-brand-azul-quinto font-bold text-xl mb-4">02</div>
+                            <h3 className="font-bold text-brand-azul-profundo mb-3">Deep Monitoring</h3>
+                            <p className="text-sm text-brand-concreto leading-relaxed">
+                                Exposed and fixed multiple hidden stack issues through deep monitoring and observability.
+                            </p>
+                        </div>
+
+                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-brand-azul-quinto/10 hover:-translate-y-1 transition-transform duration-300 delay-200">
+                            <div className="text-brand-azul-quinto font-bold text-xl mb-4">03</div>
+                            <h3 className="font-bold text-brand-azul-profundo mb-3">Clear Feedback</h3>
+                            <p className="text-sm text-brand-concreto leading-relaxed">
+                                Delivered <strong>40 clear feedback messages</strong> to CX analysts (vs. one vague error) to empower faster resolutions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Slide6_Next = () => (
+            <div className="h-full flex flex-col justify-center px-12 md:px-24 relative">
+                <div className="absolute bottom-0 left-0 w-1/3 h-full bg-brand-floresta/5 -z-10"></div>
+
+                <div className="animate-fadeIn max-w-4xl w-full mx-auto text-center">
+                    <h2 className="text-4xl font-bold text-brand-azul-profundo mb-8">What's Next?</h2>
+
+                    <p className="text-xl text-brand-concreto mb-12 leading-relaxed">
+                        The team is already extending this successful model to <strong>unpublishing and suspension flows</strong> this quarter, with the goal of delivering even stronger reliability results.
+                    </p>
+
+                    <div className="bg-white p-10 rounded-3xl shadow-lg border border-brand-concreto/10 inline-block">
+                        <p className="text-2xl font-light text-brand-concreto italic">
+                            "This is Magellan in action. By building a reliable, scalable foundation, we are setting ourselves up to handle unprecedented growth."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Slide7_ExecutiveSummary = () => (
+            <div className="h-full flex flex-col justify-center px-12 md:px-24 relative">
+                <div className="absolute bottom-0 left-0 w-1/3 h-full bg-brand-floresta/5 -z-10"></div>
+
+                <div className="animate-fadeIn max-w-5xl w-full mx-auto">
+                    <div className="flex items-center space-x-4 mb-6">
+                        <div className="p-3 bg-brand-floresta/10 rounded-xl">
+                            <CheckCircle className="text-brand-floresta" size={32} />
+                        </div>
+                        <h2 className="text-4xl font-bold text-brand-azul-profundo">Executive Summary</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div className="space-y-4">
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-brand-floresta">
+                                <h3 className="text-lg font-bold text-brand-azul-profundo mb-2">System Stabilization</h3>
+                                <p className="text-brand-concreto leading-relaxed">
+                                    We have reached a steady state of <strong>10-12 bugs/month</strong>. This represents the theoretical minimum for a production system of this complexity.
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-brand-azul-quinto">
+                                <h3 className="text-lg font-bold text-brand-azul-profundo mb-2">Strategic Shift</h3>
+                                <p className="text-brand-concreto leading-relaxed">
+                                    Publishing has transformed from a "problem domain" consuming 29% of support resources to a reliable platform capability (~8% of backlog).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col justify-center space-y-4">
+                            <div className="flex justify-between items-center p-6 bg-brand-branco-quinto rounded-xl">
+                                <span className="text-brand-concreto font-medium">Peak Monthly Bugs</span>
+                                <span className="text-2xl font-bold text-brand-blush">64</span>
+                            </div>
+                            <div className="flex justify-between items-center p-6 bg-brand-branco-quinto rounded-xl border border-brand-floresta/20 shadow-md">
+                                <span className="text-brand-musgo font-bold">Current Monthly Bugs</span>
+                                <span className="text-3xl font-bold text-brand-floresta">12</span>
+                            </div>
+                            <div className="text-right text-sm text-brand-concreto pt-2">
+                                81% reduction from peak
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-center pt-4 border-t border-brand-concreto/10">
+                        <p className="text-lg md:text-xl font-light text-brand-concreto italic">
+                            "The state machine didn't just fix bugs — it transformed publishing from our biggest liability into a stable, predictable capability."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Slide8_BiggerPicture = () => {
+            const maxBugs = 230;
+            const [hoveredPoint, setHoveredPoint] = React.useState(null);
+
+            return (
+                <div className="h-full flex flex-col px-8 md:px-16 pt-8 pb-4">
+                    <div className="animate-fadeIn h-full flex flex-col">
+                        <div className="flex items-center space-x-4 mb-6">
+                            <div className="p-3 bg-brand-azul-quinto/10 rounded-xl">
+                                <Target className="text-brand-azul-quinto" size={28} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-bold text-brand-azul-profundo">The Bigger Picture</h2>
+                                <p className="text-sm text-brand-concreto">Publishing's Impact on Overall OwnerXP Bugs</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div className="bg-white p-4 rounded-xl shadow-sm border border-brand-blush/20">
+                                <div className="text-xs text-brand-concreto mb-1">March Peak Share</div>
+                                <div className="text-3xl font-bold text-brand-blush">35.4%</div>
+                                <div className="text-xs text-brand-musgo">Publishing was 1/3 of all bugs</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl shadow-sm border border-brand-floresta/20">
+                                <div className="text-xs text-brand-concreto mb-1">November Share</div>
+                                <div className="text-3xl font-bold text-brand-floresta">11.1%</div>
+                                <div className="text-xs text-brand-musgo">Now a minor contributor</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl shadow-sm border border-brand-azul-quinto/20">
+                                <div className="text-xs text-brand-concreto mb-1">Total OwnerXP Drop</div>
+                                <div className="text-3xl font-bold text-brand-azul-quinto">40%</div>
+                                <div className="text-xs text-brand-musgo">Mar → Nov (181 → 108)</div>
+                            </div>
+                        </div>
+
+                        {/* Dual Line Chart */}
+                        <div className="flex-1 min-h-0 relative rounded-xl p-0">
+                            <div className="h-full flex flex-col">
+                                <div className="flex justify-end space-x-4 mb-1 text-xs">
+                                    <div className="flex items-center space-x-1">
+                                        <div className="w-3 h-3 rounded-full bg-brand-azul-quinto"></div>
+                                        <span className="text-brand-concreto">Total OwnerXP</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <div className="w-3 h-3 rounded-full bg-brand-floresta"></div>
+                                        <span className="text-brand-concreto">Publishing</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 relative">
+                                    {/* Grid Lines */}
+                                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                                        {[1, 0.75, 0.5, 0.25, 0].map((tick, i) => (
+                                            <div key={i} className="w-full border-t border-dashed border-brand-concreto/10 h-0 flex items-center">
+                                                <span className="text-[10px] text-brand-concreto/40 -ml-8 pr-2">{Math.round(maxBugs * tick)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Chart Area */}
+                                    <svg className="w-full h-full" viewBox="0 0 1000 180" preserveAspectRatio="none">
+                                        {/* Publishing Area Fill */}
+                                        <defs>
+                                            <linearGradient id="publishingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" stopColor="#009850" stopOpacity="0.2" />
+                                                <stop offset="100%" stopColor="#009850" stopOpacity="0.05" />
+                                            </linearGradient>
+                                        </defs>
+
+                                        {/* Publishing Area */}
+                                        <path
+                                            d={ownerXPData.map((d, i) => {
+                                                const totalPoints = ownerXPData.length;
+                                                const segmentWidth = 1000 / totalPoints;
+                                                const x = segmentWidth * i + segmentWidth / 2;
+                                                const y = 180 - (d.publishing / maxBugs) * 180;
+                                                return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+                                            }).join(' ') + ' L 1000 180 L 0 180 Z'}
+                                            fill="url(#publishingGradient)"
+                                        />
+
+                                        {/* Total OwnerXP Line */}
+                                        <polyline
+                                            points={ownerXPData.map((d, i) => {
+                                                const totalPoints = ownerXPData.length;
+                                                const segmentWidth = 1000 / totalPoints;
+                                                const x = segmentWidth * i + segmentWidth / 2;
+                                                const y = 180 - (d.total / maxBugs) * 180;
+                                                return `${x},${y}`;
+                                            }).join(' ')}
+                                            fill="none"
+                                            stroke="#3957BD"
+                                            strokeWidth="3"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+
+                                        {/* Publishing Line */}
+                                        <polyline
+                                            points={ownerXPData.map((d, i) => {
+                                                const totalPoints = ownerXPData.length;
+                                                const segmentWidth = 1000 / totalPoints;
+                                                const x = segmentWidth * i + segmentWidth / 2;
+                                                const y = 180 - (d.publishing / maxBugs) * 180;
+                                                return `${x},${y}`;
+                                            }).join(' ')}
+                                            fill="none"
+                                            stroke="#009850"
+                                            strokeWidth="3"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+
+                                        {/* Interactive Data Points with Hover Areas */}
+                                        {ownerXPData.map((d, i) => {
+                                            // Calculate x position to align with month labels
+                                            const totalPoints = ownerXPData.length;
+                                            const segmentWidth = 1000 / totalPoints;
+                                            const x = segmentWidth * i + segmentWidth / 2;
+                                            const yTotal = 180 - (d.total / maxBugs) * 180;
+                                            const yPub = 180 - (d.publishing / maxBugs) * 180;
+                                            return (
+                                                <g key={i}>
+                                                    {/* Invisible hover area */}
+                                                    <rect
+                                                        x={x - 25}
+                                                        y="0"
+                                                        width="50"
+                                                        height="180"
+                                                        fill="transparent"
+                                                        onMouseEnter={() => setHoveredPoint(i)}
+                                                        onMouseLeave={() => setHoveredPoint(null)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    />
+                                                    {/* Data points */}
+                                                    <circle cx={x} cy={yTotal} r={hoveredPoint === i ? "6" : "4"} fill="#3957BD" stroke="white" strokeWidth="2" />
+                                                    <circle cx={x} cy={yPub} r={hoveredPoint === i ? "6" : "4"} fill="#009850" stroke="white" strokeWidth="2" />
+                                                </g>
+                                            );
+                                        })}
+                                    </svg>
+
+                                    {/* Tooltip */}
+                                    {hoveredPoint !== null && (
+                                        <div
+                                            className="absolute bg-brand-azul-profundo text-white text-xs p-3 rounded-lg shadow-xl z-10 pointer-events-none"
+                                            style={{
+                                                left: `${((hoveredPoint + 0.5) / ownerXPData.length) * 100}%`,
+                                                top: '10%',
+                                                transform: 'translateX(-50%)'
+                                            }}
+                                        >
+                                            <div className="font-bold mb-1">{ownerXPData[hoveredPoint].month}</div>
+                                            <div className="flex items-center space-x-2 mb-1">
+                                                <div className="w-2 h-2 rounded-full bg-brand-azul-quinto"></div>
+                                                <span>Total: {ownerXPData[hoveredPoint].total} bugs</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2 mb-1">
+                                                <div className="w-2 h-2 rounded-full bg-brand-floresta"></div>
+                                                <span>Publishing: {ownerXPData[hoveredPoint].publishing} bugs</span>
+                                            </div>
+                                            <div className="text-brand-creme text-[10px] mt-1">
+                                                Share: {ownerXPData[hoveredPoint].share.toFixed(1)}%
+                                            </div>
+                                        </div>
+                                    )}
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Month Labels - Below Chart */}
+                        <div className="flex justify-between px-4 mt-2">
+                            {ownerXPData.map((d, i) => (
+                                <div key={i} className="text-xs font-medium text-brand-concreto flex-1 text-center">{d.month}</div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const totalSlides = 8;
+
+            const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
+            const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowRight') nextSlide();
+                    if (e.key === 'ArrowLeft') prevSlide();
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, []);
+
+            const renderSlide = () => {
+                switch (currentSlide) {
+                    case 0: return <Slide1_Intro key="slide-1" />;
+                    case 1: return <Slide2_Challenge key="slide-2" />;
+                    case 2: return <Slide3_Impact key="slide-3" />;
+                    case 3: return <Slide4_QuarterlyEvolution key="slide-4" />;
+                    case 4: return <Slide5_How key="slide-5" />;
+                    case 5: return <Slide6_Next key="slide-6" />;
+                    case 6: return <Slide7_ExecutiveSummary key="slide-7" />;
+                    case 7: return <Slide8_BiggerPicture key="slide-8" />;
+                    default: return <Slide1_Intro key="slide-1" />;
+                }
+            };
+
+            return (
+                <div className="w-full h-full flex flex-col bg-white py-4 md:py-6 relative">
+                    {/* Main Content - Increased padding to prevent cutoff */}
+                    <div className="flex-1 overflow-hidden relative rounded-xl mx-4 md:mx-8 border border-brand-concreto/10 shadow-sm">
+                        {renderSlide()}
+                    </div>
+
+                    {/* Side Navigation Arrows */}
+                    <button
+                        onClick={prevSlide}
+                        disabled={currentSlide === 0}
+                        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/80 shadow-lg hover:bg-white text-brand-azul-profundo disabled:opacity-0 transition-all duration-300 z-50 hover:scale-110"
+                    >
+                        <ChevronLeft size={32} />
+                    </button>
+
+                    <button
+                        onClick={nextSlide}
+                        disabled={currentSlide === totalSlides - 1}
+                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/80 shadow-lg hover:bg-white text-brand-azul-profundo disabled:opacity-0 transition-all duration-300 z-50 hover:scale-110"
+                    >
+                        <ChevronRight size={32} />
+                    </button>
+
+                    {/* Slide Indicator (Optional, small dots at bottom) */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                        {Array.from({ length: totalSlides }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${currentSlide === idx ? 'w-6 bg-brand-azul-quinto' : 'w-1.5 bg-brand-concreto/20'}`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
